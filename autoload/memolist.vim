@@ -276,14 +276,16 @@ function! memolist#new_with_meta(title, tags, categories)
 
 endfunction
 
-let s:default_template = [
-\ 'title: {{_title_}}',
-\ '==========',
-\ 'date: {{_date_}}',
-\ 'tags: [{{_tags_}}]',
-\ 'categories: [{{_categories_}}]',
-\ '- - -',
-\]
+let s:default_template = []
+
+" let s:default_template = [
+" \ 'title: {{_title_}}',
+" \ '==========',
+" \ 'date: {{_date_}}',
+" \ 'tags: [{{_tags_}}]',
+" \ 'categories: [{{_categories_}}]',
+" \ '- - -',
+" \]
 
 function! s:apply_template(template, items)
   let mx = '{{_\(\w\+\)_}}'
