@@ -1,3 +1,4 @@
+
 " autoload/memolist.vim
 " Author:  Akira Maeda <glidenote@gmail.com>
 " Version: 0.4.0
@@ -77,7 +78,8 @@ if !exists('g:memolist_memo_date')
 endif
 
 if !exists('g:memolist_filename_date')
-  let g:memolist_filename_date = "%Y-%m-%d-"
+  " let g:memolist_filename_date = "%Y-%m-%d-"
+  let g:memolist_filename_date = "%Y-%m-%d"
 endif
 
 if !exists('g:memolist_title_pattern')
@@ -127,10 +129,10 @@ endif
 
 function! s:esctitle(str)
   let str = a:str
-  let str = tolower(str)
-  let str = substitute(str, g:memolist_title_pattern, '-', 'g')
-  let str = substitute(str, '\(--\)\+', '-', 'g')
-  let str = substitute(str, '\(^-\|-$\)', '', 'g')
+  " let str = tolower(str)
+  " let str = substitute(str, g:memolist_title_pattern, '-', 'g')
+  " let str = substitute(str, '\(--\)\+', '-', 'g')
+  " let str = substitute(str, '\(^-\|-$\)', '', 'g')
   return str
 endfunction
 
@@ -190,9 +192,13 @@ function! memolist#_complete_ymdhms(...)
   return [strftime("%Y%m%d%H%M")]
 endfunction
 
-function! memolist#new(title)
-  call memolist#new_with_meta(a:title, [], [])
+function! memolist#new(...)
+  call memolist#new_with_meta([], [], [])
 endfunction
+
+" function! memolist#new(title)
+"   call memolist#new_with_meta(a:title, [], [])
+" endfunction
 
 function! memolist#new_copying_meta(...)
   let title = a:0 > 0 ? a:1 : ''
@@ -210,7 +216,7 @@ endfunction
 
 function! memolist#new_with_meta(title, tags, categories)
   let items = {
-  \ 'title': a:title,
+  \ 'title': s:join_without_empty(a:title),
   \ 'date':  localtime(),
   \ 'tags':  s:join_without_empty(a:tags),
   \ 'categories': s:join_without_empty(a:categories),
@@ -222,9 +228,9 @@ function! memolist#new_with_meta(title, tags, categories)
   if items['title'] == ''
     let items['title']= input("Memo title: ", "", "customlist,memolist#_complete_ymdhms")
   endif
-  if items['title'] == ''
-    return
-  endif
+  " if items['title'] == ''
+    " return
+  " endif
 
   if get(g:, 'memolist_prompt_tags', 0) != 0 && empty(items['tags'])
     let items['tags'] = s:join_without_empty(input("Memo tags: "))
@@ -237,7 +243,11 @@ function! memolist#new_with_meta(title, tags, categories)
   if get(g:, 'memolist_filename_prefix_none', 0) != 0
     let file_name = s:esctitle(items['title'])
   else
-    let file_name = strftime(g:memolist_filename_date) . s:esctitle(items['title'])
+    if items['title'] == ''
+      let file_name = "Daily Notes/" . strftime(g:memolist_filename_date)
+    else
+      let file_name = s:esctitle(items['title'])
+    endif
   endif
   if stridx(items['title'], '.') == -1
     let file_name = file_name . "." . g:memolist_memo_suffix
